@@ -2,5 +2,15 @@
     "name": "Twitch Timestamper",
     "description": "Timestamps with messages for twitch streams",
     "version": "1.0",
-    "manifest_version": 3
+    "manifest_version": 3,
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "action": {
+        "default_title": "Timetag for Twitch"
+    },
+    "background": {
+        "service_worker":"background.js"
+    }
 }
