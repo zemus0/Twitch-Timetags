@@ -1,0 +1,6 @@
+{
+    "name": "Twitch Timestamper",
+    "description": "Timestamps with messages for twitch streams",
+    "version": "1.0",
+    "manifest_version": 3
+}
