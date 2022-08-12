@@ -1,0 +1,28 @@
+.timestamp_wrapper {
+    overflow: auto;
+    margin: 2%;
+    height:50%;
+}
+
+.timestamp_container {
+    margin-top:1%;
+    display: flex;
+}
+
+.time_text {
+    margin-top: 0.1%;
+    flex: 1;
+    text-align: center;
+
+}
+
+.button_container {
+    margin-left: 2%;
+    flex: 1;
+    display: flex;
+}
+
+.time_button {
+    flex: 1;
+}
+
