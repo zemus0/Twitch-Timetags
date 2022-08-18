@@ -41,15 +41,17 @@ document.getElementById("add_new_time").addEventListener('click', () => {
         <p id="${time_id}" class="time_text">${current_time}</p>
         <input class="text_input" placeholder="Type notes here..." style="flex: 8">
         <div class="button_container">
-            <button id="${dec}" class="button">&lt;</button>
-            <button id="${inc}" class="button">&gt;</button>
-            <button id="${rm}" class="button">x</button>
+            <button id="${dec}" class="button" title="Decrease 1 second (press Alt to decrease by 5)">&lt;
+            </button>
+            <button id="${inc}" class="button" title="Increase 1 second (press Alt to increase by 5)">&gt;
+            </button>
+            <button id="${rm}" class="button" title="Delete tag">x</button>
         </div>
         </div>`;
 
         time_container.insertAdjacentHTML('beforeend', timestamp_block);
-        document.getElementById(inc).addEventListener("click", function(){button_clicked(inc, "inc");});
-        document.getElementById(dec).addEventListener("click", function(){button_clicked(dec, "dec");});
+        document.getElementById(inc).addEventListener("click", function(e){button_clicked(inc, "inc", e);});
+        document.getElementById(dec).addEventListener("click", function(e){button_clicked(dec, "dec", e);});
         document.getElementById(rm).addEventListener("click", function(){button_clicked(rm, "rm");});
         dirty = true;
     });
@@ -75,16 +77,17 @@ document.getElementById("export_timestamp").addEventListener('click', () => {
 });
 
 
-function button_clicked(id, type) {
+function button_clicked(id, type, event = "") {
     if(type === "rm"){
         document.getElementById(id_dict[id]).remove();
     } else {
         let time_text = document.getElementById(id_dict[id]);
         let current_text = time_text.textContent;
+        let change = event.altKey ? 5 : 1;
         if(type === "inc"){
-            time_text.textContent = change_time_stamp(current_text, +5);
+            time_text.textContent = change_time_stamp(current_text, change);
         } else {
-            time_text.textContent = change_time_stamp(current_text, -5);
+            time_text.textContent = change_time_stamp(current_text, -change);
         }
     }
 }
