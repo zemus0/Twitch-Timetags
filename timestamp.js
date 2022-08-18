@@ -32,8 +32,8 @@ document.getElementById("add_new_time").addEventListener('click', () => {
         <p id="${time_id}" class="time_text">${current_time}</p>
         <input class="text_input" placeholder="Type notes here..." style="flex: 8">
         <div class="button_container">
-            <button id="${inc}" class="button">&lt;</button>
-            <button id="${dec}" class="button">&gt;</button>
+            <button id="${dec}" class="button">&lt;</button>
+            <button id="${inc}" class="button">&gt;</button>
             <button id="${rm}" class="button">x</button>
         </div>
         </div>`;
@@ -56,5 +56,25 @@ document.getElementById("export_timestamp").addEventListener('click', () => {
 function button_clicked(id, type) {
     if(type === "rm"){
         document.getElementById(id_dict[id]).remove();
+    } else {
+        let time_text = document.getElementById(id_dict[id]);
+        let current_text = time_text.textContent;
+        if(type === "inc"){
+            time_text.textContent = change_time_stamp(current_text, +5);
+        } else {
+            time_text.textContent = change_time_stamp(current_text, -5);
+        }
     }
+}
+
+function change_time_stamp(time_str, change){
+    let a = time_str.split(":")
+    let seconds = (+a[0]) * 60 * 60 + (+a[1]) * 60 + (+a[2]); 
+    seconds += change;
+
+    let h = (seconds / 3600) | 0;
+    let m = ((seconds - (h*3600)) / 60) | 0;
+    let s = seconds - (h*3600) - (m*60);
+
+    return `${h}:${m}:${s}`;
 }
