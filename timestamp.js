@@ -8,17 +8,20 @@ let timestamp_block = `<div class="timestamp_container">
 </div>
 </div> `;
 
+let tabID;
+chrome.storage.local.get(['key'], function(result) {
+    tabID = result.key;
+});
+
 //add container
 let time_container = document.getElementsByClassName("timestamp_wrapper")[0];
 
-document.getElementById("add_new_time").addEventListener('click', () =>
-{
-    let current_time = "00:00:01"
-    // let current_time = document.getElementsByClassName("live-time")[0].textContent;
-    time_container.insertAdjacentHTML('beforeend', timestamp_block.replace(new RegExp("\\bTIME\\b"), current_time));
+document.getElementById("add_new_time").addEventListener('click', () => {
+    chrome.tabs.sendMessage(tabID, {text: 'time'}, (current_time) => {
+        time_container.insertAdjacentHTML('beforeend', timestamp_block.replace(new RegExp("\\bTIME\\b"), current_time));
+    });
 });
 
-document.getElementById("export_timestamp").addEventListener('click', () =>
-{
-    alert("copy pasta");
+document.getElementById("export_timestamp").addEventListener('click', () => {
+    
 });
