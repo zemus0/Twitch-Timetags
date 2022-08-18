@@ -22,7 +22,7 @@
 .time_text {
     flex: 1;
     text-align: center;
-
+    padding:5px;
 }
 
 .text_input {

@@ -13,7 +13,7 @@ chrome.action.onClicked.addListener((tab) => {
             url: "timestamp.html",
             type: "popup",
             height:500,
-            width:300,
+            width:400,
         });
     }
 });
