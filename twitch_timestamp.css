@@ -1,28 +1,51 @@
-.timestamp_wrapper {
-    overflow: auto;
-    margin: 2%;
-    height:50%;
+.settings_container {
+    display: flex;
+    padding: 10px;
+    border: black;
+    border-width: 1px;
+    border-style: solid;
 }
 
+.timestamp_wrapper {
+    overflow: auto;
+}
+
+
 .timestamp_container {
-    margin-top:1%;
+    margin-top:10px;
     display: flex;
+    border: black;
+    border-width: 1px;
+    border-style: solid;
 }
 
 .time_text {
-    margin-top: 0.1%;
     flex: 1;
     text-align: center;
 
 }
 
+.text_input {
+    border: none;
+    outline:none;
+    /* outline: 2px solid orange; */
+    /* height:20px; */
+}
+
 .button_container {
-    margin-left: 2%;
     flex: 1;
     display: flex;
 }
 
-.time_button {
+.button {
     flex: 1;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: grey;
 }
 
