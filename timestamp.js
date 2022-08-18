@@ -65,7 +65,7 @@ document.getElementById("export_timestamp").addEventListener('click', () => {
         copypasta += time + " " + text + "\n";
     }
 
-    navigator.clipboard.writeText(copypasta).then( ()=> {
+    navigator.clipboard.writeText(copypasta.trim()).then( ()=> {
         copied = true;
         dirty = false;
         alert("Coppied to clipboard.");
