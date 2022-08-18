@@ -5,7 +5,16 @@ chrome.storage.local.get(['key'], function(result) {
 
 //add container
 let time_container = document.getElementsByClassName("timestamp_wrapper")[0];
-let id_dict = {}
+let copied = false;
+let dirty = false;
+let id_dict = {};
+
+window.addEventListener("beforeunload", (e)=>{
+    if(!copied && dirty){
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
 
 document.getElementById("add_new_time").addEventListener('click', () => {
     let inc, dec, rm, container_id, time_id, current_time; // = "00:00:01";
@@ -39,19 +48,32 @@ document.getElementById("add_new_time").addEventListener('click', () => {
         </div>`;
 
         time_container.insertAdjacentHTML('beforeend', timestamp_block);
-
         document.getElementById(inc).addEventListener("click", function(){button_clicked(inc, "inc");});
         document.getElementById(dec).addEventListener("click", function(){button_clicked(dec, "dec");});
         document.getElementById(rm).addEventListener("click", function(){button_clicked(rm, "rm");});
+        dirty = true;
     });
 });
 
 document.getElementById("export_timestamp").addEventListener('click', () => {
     let container = document.getElementsByClassName("timestamp_container");
+    let copypasta = "";
     for (let index = 0; index < container.length; index++) {
         const element = container[index];
+        let text = element.querySelector(".text_input").value;
+        let time = element.querySelector(".time_text").textContent;
+        copypasta += time + " " + text + "\n";
     }
+
+    navigator.clipboard.writeText(copypasta).then( ()=> {
+        copied = true;
+        dirty = false;
+        alert("Coppied to clipboard.");
+    }, (err) => {
+        alert("Error can't copy to clipboard: " + err);
+    });
 });
+
 
 function button_clicked(id, type) {
     if(type === "rm"){
