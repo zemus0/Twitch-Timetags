@@ -14,7 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const twitch_channel = `tw_ch_${respond.channel}`
 
     chrome.storage.local.get([twitch_channel]).then(result => {
-      result = Object.values(result)
+      result = Object.values(result)[0]
       if (!result) {
         let empty = {}
         empty[twitch_channel] = []
@@ -30,28 +30,28 @@ window.addEventListener('DOMContentLoaded', () => {
                   <button id="${block['rm']}" class="button" title="Delete tag">x</button>
               </div>
           </div>`
-          
+
+          id_dict[block['time_id']] = id_dict[block['container_id']] = 'Na'
+          id_dict[block['inc']] = id_dict[block['dec']] = block['time_id']
+          id_dict[block['rm']] = block['container_id']
           time_container.insertAdjacentHTML('beforeend', timestamp_block)
-          document.getElementById(block['input_id']).addEventListener('change', () => {
-          backup_timestamps(
-            block['container_id'],
-            block['time_id'],
-            block['dec'],
-            block['inc'],
-            block['rm'],
-            block['current_time'],
-            block['input_id']
-          )
-        })
-        document.getElementById(block['inc']).addEventListener('click', e => {
-          button_clicked(block['inc'], 'inc', e)
-        })
-        document.getElementById(block['dec']).addEventListener('click', e => {
-          button_clicked(block['dec'], 'dec', e)
-        })
-        document.getElementById(block['rm']).addEventListener('click', () => {
-          button_clicked(block['rm'], 'rm')
-        })
+          document
+            .getElementById(block['input_id'])
+            .addEventListener('change', () => {
+              backup_timestamps(block)
+            })
+          document.getElementById(block['inc']).addEventListener('click', e => {
+            button_clicked(block['inc'], 'inc', e)
+            backup_timestamps(block)
+          })
+          document.getElementById(block['dec']).addEventListener('click', e => {
+            button_clicked(block['dec'], 'dec', e)
+            backup_timestamps(block)
+          })
+          document.getElementById(block['rm']).addEventListener('click', () => {
+            button_clicked(block['rm'], 'rm')
+            remove_timestamp(block['container_id'])
+          })
         })
       }
     })
@@ -66,64 +66,67 @@ window.addEventListener('beforeunload', e => {
 })
 
 document.getElementById('add_new_time').addEventListener('click', () => {
-  let inc, dec, rm, container_id, time_id, input_id, current_time // = "00:00:01";
+  let id_obj = {
+    container_id: null,
+    time_id: null,
+    dec: null,
+    inc: null,
+    rm: null,
+    current_time: null,
+    input_id: null,
+    text: ''
+  }
   while (true) {
-    inc = Math.random().toString(36).slice(2, 7)
-    dec = Math.random().toString(36).slice(2, 7)
-    rm = Math.random().toString(36).slice(2, 7)
-    container_id = Math.random().toString(36).slice(2, 7)
-    time_id = Math.random().toString(36).slice(2, 7)
-    input_id = Math.random().toString(36).slice(2, 7)
+    id_obj['inc'] = Math.random().toString(36).slice(2, 7)
+    id_obj['dec'] = Math.random().toString(36).slice(2, 7)
+    id_obj['rm'] = Math.random().toString(36).slice(2, 7)
+    id_obj['container_id'] = Math.random().toString(36).slice(2, 7)
+    id_obj['time_id'] = Math.random().toString(36).slice(2, 7)
+    id_obj['input_id'] = Math.random().toString(36).slice(2, 7)
 
     if (
-      id_dict[inc] == null ||
-      id_dict[dec] == null ||
-      id_dict[rm] == null ||
-      id_dict[time_id] == null ||
-      id_dict[container_id] == null ||
-      id_dict[input_id] == null
+      id_dict[id_obj['inc']] == null ||
+      id_dict[id_obj['dec']] == null ||
+      id_dict[id_obj['rm']] == null ||
+      id_dict[id_obj['time_id']] == null ||
+      id_dict[id_obj['container_id']] == null ||
+      id_dict[id_obj['input_id']] == null
     ) {
       break
     }
   }
-  id_dict[container_id] = 'Na'
-  id_dict[time_id] = 'Na'
-  id_dict[dec] = time_id
-  id_dict[inc] = time_id
-  id_dict[rm] = container_id
+  id_dict[id_obj['time_id']] = id_dict[id_obj['container_id']] = 'Na'
+  id_dict[id_obj['inc']] = id_dict[id_obj['dec']] = id_obj['time_id']
+  id_dict[id_obj['rm']] = id_obj['container_id']
   chrome.tabs.sendMessage(tabID, { text: 'time' }, respond => {
-    current_time = respond.time
-
-    const timestamp_block = `<div id="${container_id}" class="timestamp_container">
-            <p id="${time_id}" class="time_text">${current_time}</p>
-            <input id="${input_id}" class="text_input" placeholder="Type notes here..." style="flex: 8">
-            <div class="button_container">
-                <button id="${dec}" class="button" title="Decrease 1 second (press Alt to decrease by 5)">&lt;</button>
-                <button id="${inc}" class="button" title="Increase 1 second (press Alt to increase by 5)">&gt;</button>
-                <button id="${rm}" class="button" title="Delete tag">x</button>
-            </div>
-        </div>`
+    id_obj['current_time'] = respond.time
+    const timestamp_block = `<div id="${id_obj['container_id']}" class="timestamp_container">
+              <p id="${id_obj['time_id']}" class="time_text">${id_obj['current_time']}</p>
+              <input id="${id_obj['input_id']}" class="text_input" placeholder="Type notes here..." style="flex: 8" value="${id_obj['text']}">
+              <div class="button_container">
+                  <button id="${id_obj['dec']}" class="button" title="Decrease 1 second (press Alt to decrease by 5)">&lt;</button>
+                  <button id="${id_obj['inc']}" class="button" title="Increase 1 second (press Alt to increase by 5)">&gt;</button>
+                  <button id="${id_obj['rm']}" class="button" title="Delete tag">x</button>
+              </div>
+          </div>`
 
     time_container.insertAdjacentHTML('beforeend', timestamp_block)
-    document.getElementById(input_id).addEventListener('change', () => {
-      backup_timestamps(
-        container_id,
-        time_id,
-        dec,
-        inc,
-        rm,
-        current_time,
-        input_id
-      )
+    document
+      .getElementById(id_obj['input_id'])
+      .addEventListener('change', () => {
+        backup_timestamps(id_obj)
+      })
+    document.getElementById(id_obj['inc']).addEventListener('click', e => {
+      button_clicked(id_obj['inc'], 'inc', e)
+      backup_timestamps(id_obj)
     })
-    document.getElementById(inc).addEventListener('click', e => {
-      button_clicked(inc, 'inc', e)
+    document.getElementById(id_obj['dec']).addEventListener('click', e => {
+      button_clicked(id_obj['dec'], 'dec', e)
+      backup_timestamps(id_obj)
     })
-    document.getElementById(dec).addEventListener('click', e => {
-      button_clicked(dec, 'dec', e)
-    })
-    document.getElementById(rm).addEventListener('click', () => {
-      button_clicked(rm, 'rm')
+    document.getElementById(id_obj['rm']).addEventListener('click', () => {
+      button_clicked(id_obj['rm'], 'rm')
+      remove_timestamp(id_obj['container_id'])
     })
     dirty = true
   })
@@ -178,32 +181,17 @@ function change_time_stamp (time_str, change) {
   return `${h}:${m}:${s}`
 }
 
-function backup_timestamps (
-  container_id,
-  time_id,
-  dec,
-  inc,
-  rm,
-  current_time,
-  input_id
-) {
+function backup_timestamps (store) {
+  store['text'] = document.getElementById(store['input_id']).value
+  store['current_time'] = document.getElementById(store['time_id']).textContent
   chrome.storage.local.get(['channel']).then(respond => {
     const twitch_channel = `tw_ch_${respond.channel}`
-    const store = {
-      'container_id': container_id,
-      'time_id': time_id,
-      'dec': dec,
-      'inc': inc,
-      'rm': rm,
-      'current_time': current_time,
-      'input_id': input_id,
-      'text': document.getElementById(input_id).value
-    }
     chrome.storage.local.get([twitch_channel]).then(result => {
-      result = Object.values(result)
-
-      const index = result.findIndex((id) => id['container_id'] === container_id);
-      if(index === -1){
+      result = Object.values(result)[0]
+      const index = result.findIndex(
+        id => id['container_id'] === store['container_id']
+      )
+      if (index === -1) {
         result.push(store)
       } else {
         result[index] = store
@@ -211,6 +199,20 @@ function backup_timestamps (
 
       let newResult = {}
       newResult[twitch_channel] = result
+      chrome.storage.local.set(newResult)
+    })
+  })
+}
+
+function remove_timestamp (container_id) {
+  chrome.storage.local.get(['channel']).then(respond => {
+    const twitch_channel = `tw_ch_${respond.channel}`
+    chrome.storage.local.get([twitch_channel]).then(result => {
+      result = Object.values(result)[0]
+      const index = result.findIndex(id => id['container_id'] === container_id)
+      result.splice(index, 1)
+      let newResult = {}
+      newResult[twitch_channel] = result 
       chrome.storage.local.set(newResult)
     })
   })
