@@ -1,14 +1,18 @@
 .settings_container {
+    /* position: -webkit-sticky; */
+    position: sticky;
+    top:10px;
     display: flex;
     padding: 10px;
     border: black;
     border-width: 1px;
     border-style: solid;
+    background-color: white;
 }
 
-.timestamp_wrapper {
+/* .timestamp_wrapper {
     overflow: auto;
-}
+} */
 
 
 .timestamp_container {
