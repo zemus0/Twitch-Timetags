@@ -7,17 +7,18 @@ chrome.storage.local.get(['key'], function (result) {
 let time_container = document.getElementsByClassName('timestamp_wrapper')[0]
 let copied = false
 let dirty = false
+let twitch_stream
 let id_dict = {}
 
 window.addEventListener('DOMContentLoaded', () => {
-  chrome.storage.local.get(['channel']).then(respond => {
-    const twitch_channel = `tw_ch_${respond.channel}`
+  chrome.storage.local.get(['stream']).then(respond => {
+    twitch_stream = `tw_ch_${respond.stream}`
 
-    chrome.storage.local.get([twitch_channel]).then(result => {
+    chrome.storage.local.get([twitch_stream]).then(result => {
       result = Object.values(result)[0]
       if (!result) {
         let empty = {}
-        empty[twitch_channel] = []
+        empty[twitch_stream] = []
         chrome.storage.local.set(empty)
       } else {
         result.forEach(block => {
@@ -184,36 +185,30 @@ function change_time_stamp (time_str, change) {
 function backup_timestamps (store) {
   store['text'] = document.getElementById(store['input_id']).value
   store['current_time'] = document.getElementById(store['time_id']).textContent
-  chrome.storage.local.get(['channel']).then(respond => {
-    const twitch_channel = `tw_ch_${respond.channel}`
-    chrome.storage.local.get([twitch_channel]).then(result => {
-      result = Object.values(result)[0]
-      const index = result.findIndex(
-        id => id['container_id'] === store['container_id']
-      )
-      if (index === -1) {
-        result.push(store)
-      } else {
-        result[index] = store
-      }
+  chrome.storage.local.get([twitch_stream]).then(result => {
+    result = Object.values(result)[0]
+    const index = result.findIndex(
+      id => id['container_id'] === store['container_id']
+    )
+    if (index === -1) {
+      result.push(store)
+    } else {
+      result[index] = store
+    }
 
-      let newResult = {}
-      newResult[twitch_channel] = result
-      chrome.storage.local.set(newResult)
-    })
+    let newResult = {}
+    newResult[twitch_stream] = result
+    chrome.storage.local.set(newResult)
   })
 }
 
 function remove_timestamp (container_id) {
-  chrome.storage.local.get(['channel']).then(respond => {
-    const twitch_channel = `tw_ch_${respond.channel}`
-    chrome.storage.local.get([twitch_channel]).then(result => {
-      result = Object.values(result)[0]
-      const index = result.findIndex(id => id['container_id'] === container_id)
-      result.splice(index, 1)
-      let newResult = {}
-      newResult[twitch_channel] = result 
-      chrome.storage.local.set(newResult)
-    })
+  chrome.storage.local.get([twitch_stream]).then(result => {
+    result = Object.values(result)[0]
+    const index = result.findIndex(id => id['container_id'] === container_id)
+    result.splice(index, 1)
+    let newResult = {}
+    newResult[twitch_stream] = result
+    chrome.storage.local.set(newResult)
   })
 }
